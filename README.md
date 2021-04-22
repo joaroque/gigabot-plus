@@ -1,5 +1,7 @@
-# Gigabot-plus
+# Gigabot+
  Bot que responde automáticamente as perguntas do giga unitel
+ 
+ > O script pode apresentar alguns erros, pois não tive tempo de escrever as execções qie podem existir na conexão. E na apresentação dos MBs ele pode vir com erro por exemplo: ["100MB]
  
  # Instalação
  
