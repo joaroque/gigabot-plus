@@ -20,13 +20,13 @@ python gb.py
  # Screenshots
  
  ## Inicio
-![](https://raw.githubusercontent.com/joaroque/gigabot-plus/main/screenshot/p.PNG)
-
-## Treinar
 ![](https://raw.githubusercontent.com/joaroque/gigabot-plus/main/screenshot/p1.PNG)
 
-## Jogar
+## Treinar
 ![](https://raw.githubusercontent.com/joaroque/gigabot-plus/main/screenshot/p2.PNG)
+
+## Jogar
+![](https://raw.githubusercontent.com/joaroque/gigabot-plus/main/screenshot/p.PNG)
 
 # Atenção: o portal giga vai ser cancelado até dia 30
 - Só vai poder jogar caso o cliente estiver subscrito
