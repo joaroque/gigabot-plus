@@ -4,26 +4,27 @@
  # Instalação
  
  Para instalar esta ferramenta é muito fácil
- python`
- pip install requests
- `
+
+ ```sh
+pip install requestst
+```
  
  # Jogar
  
-  python`
-python gp.py
- `
+```sh
+python bb.py
+```
  
  # Screenshots
  
  ## Inicio
-![](./screenshots/p1.png)
+![](./screenshot/p1.png)
 
 ## Treinar
-![](./screenshots/p2.png)
+![](./screenshot/p2.png)
 
 ## Jogar
-![](./screenshots/p3.png)
+![](./screenshot/p3.png)
 
 # Atenção: o portal giga vai ser cancelado até dia 30
 - Só vai poder jogar caso o cliente estiver subscrito
