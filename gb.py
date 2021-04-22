@@ -5,6 +5,9 @@ from time import sleep
 import requests
 from requests.auth import HTTPBasicAuth
 from modules.banner import logo, menu
+from modules.headers import game_header
+from modules.headers import answer_header
+from modules.headers import player_header
 from modules.libs.bootstrapy import Strapy
 from modules.utils.get_token import get_token
 from modules.utils.get_movid import get_movId
@@ -14,9 +17,6 @@ from modules.utils.get_index import get_index_by_json
 from modules.utils.get_token_logged import get_token_logged
 from modules.utils.get_number_wallet import get_number_wallet
 from modules.utils.get_correctanswer import get_correct_answer
-from modules.headers import game_header
-from modules.headers import answer_header
-from modules.headers import player_header
 
 class Gigabot():
 
@@ -24,15 +24,13 @@ class Gigabot():
 		self._session = requests.Session()
 		self._main = self._session.get("http://giga.unitel.ao")
 		self._main.encoding = 'UTF-8'
-		
 		self._game_headers = game_header()
-		# endpoint: guest
 		self._guest = self._session.post("http://giga.unitel.ao/api/player/guest", headers=self._game_headers)
 		self._token = get_token(self._guest)
 		self._player_headers = player_header(self._token)
 		self._answer_headers = answer_header(self._token)
 		
-		system('clear')
+		system('clear') | system('cls')
 
 	def time(self,t):
 		sleep(t)
@@ -40,10 +38,7 @@ class Gigabot():
 	def clear_Scr(self, t=None):
 		if t:
 			sleep(t)
-		if system('os') == 'windows':
-			system('cls')
-		else:
-			system('clear')
+		system('clear') | system('cls')
 
 	def verify_in_db(self,question):
 		conn = sqlite3.connect('gigabot.db')
@@ -211,7 +206,7 @@ class Gigabot():
 		
 		if "INVALID_TOKEN" in question_req.text:
 			print(Strapy.BAD+"Token inválido"+Strapy.END)
-			system('exit')
+			exit()
 		# verification section
 		verification = self.verify_in_db(question)
 		
@@ -224,41 +219,30 @@ class Gigabot():
 	def login(self):
 		# Login section && endpoints
 		payload = {"msisdn":"","operatorId":391,"pin":0}
-	
 		login = self._session.post("http://giga.unitel.ao/api/player/login", auth=HTTPBasicAuth(self._token,""), json=payload, headers=self._answer_headers)
-	
 		#get token e player headers
-	
 		self.token_logged = get_token_logged(login)
-	
 		self.player_headers_logged = player_header(self.token_logged)
-
 		self.player_logged = self._session.get("http://giga.unitel.ao/api/player", headers=self.player_headers_logged)
 		
 		return self.player_logged
 	
 	def gamming(self):
 		# endpoints
-		game = self._session.get("http://giga.unitel.ao/api/game", auth=HTTPBasicAuth(self.token_logged,""), headers=self._game_headers)
-		
+		self._session.get("http://giga.unitel.ao/api/game", auth=HTTPBasicAuth(self.token_logged,""), headers=self._game_headers)
+		# endpoint: game
 		self._session.get("http://giga.unitel.ao/api/player", headers=self.player_headers_logged)
-		
 		# endpoint: inbox
-		inbox = self._session.get("http://giga.unitel.ao/api/inbox", headers=self.player_headers_logged)
-		
+		self._session.get("http://giga.unitel.ao/api/inbox", headers=self.player_headers_logged)
 		# endpoint: start
 		self._session.post("http://giga.unitel.ao/api/game/start", headers=self.player_headers_logged)
 
 		# endpoint: question
 		question_req = self._session.get("http://giga.unitel.ao/api/game/question", headers=self.player_headers_logged)
 		question = get_question(question_req)
-		#print(inbox.text)
-		#verification section
-		#verification = self.verify_in_db(question)
-		
-		#gamming...
-		#self.game(verification,question,question_req)
-		
+		# print(question_req.text)
+
+		# response verification
 		if "WITHOUT_GAME" in question_req.text:
 			print(Strapy.BAD+"Sem jogo disponível!"+Strapy.END)
 			return False
@@ -270,19 +254,14 @@ class Gigabot():
 			return False
 		else:
 			print(Strapy.INFO+"Jogando...\n"+Strapy.END)
-			print(question)
-			
+			#print(question)
 			# verificação
 			verification = self.verify_in_db(question)
-			
 			# para colocar o cabeçalho correcto 
 			answer_headers_game = answer_header(self.token_logged)
-
 			# gamming...
 			self.game(verification,question,question_req,answer_headers_game)
 			return True
-
-
 
 
 	def logout(self):
@@ -292,10 +271,26 @@ class Gigabot():
 		#print(player.text)
 		return logout.text
 
+	def get_giga(self):
+		giga = self._session.post("http://giga.unitel.ao/api/wallet/pack/1GB", headers=self.player_headers_logged)
+		if "ALREADY_BOUGHT" in giga.text:
+			print(Strapy.BAD+"Vimos que já resgataste hoje!"+Strapy.END)
+		else:
+			print(Strapy.GOOD+"Giga resgatado com sucesso!"+Strapy.END)
+		self.time(3)
 
+
+	def one_shot(self):
+		one_shot = self._session.post("http://giga.unitel.ao/api/product/ONE_SHOT", headers=self.player_headers_logged)
+		#print(one_shot.text)
+		if "ALREADY_ACTIVE_OR_IN_PROGRESS" in one_shot.text:
+			print(Strapy.BAD+"Sem jogo extra disponível"+Strapy.END)		
+		else:
+			print(Strapy.GOOD+"Tem mais um jogo hoje!!!"+Strapy.END)
+		self.time(3)
 
 def main():
-	system('clear')
+	system('clear') | system('cls')
 	print(Strapy.RUN+"Aguarde enquanto o programa conecta..."+Strapy.END)
 	gb = Gigabot()
 	logo()
@@ -305,7 +300,6 @@ def main():
 	try:
 		# TREINAR
 		if opt == 1:
-
 			gb.clear_Scr(1)
 			logo()
 			print("")
@@ -324,7 +318,6 @@ def main():
 			gb.time(1)
 			print("\n")
 			print(Strapy.BGBLUE+Strapy.UNDERLINE +" menu > jogo "+Strapy.END)
-			
 			player = gb.login()
 			data = get_number_wallet(player)
 			number = data[0]
@@ -366,10 +359,10 @@ def main():
 			gb.login()
 			
 			print(Strapy.INFO+"Tem 3 MB"+Strapy.END)
-			print(Strapy.INFO+"Abre 4 terminal e clica em jogo normal :) em cada que jogar basta fechar :v"+Strapy.END)
+			print(Strapy.BAD+"Está opção foi removida na correção de bugs do portal :v"+Strapy.END)
 			print(Strapy.INFO+"Saindo..."+Strapy.END)
 			gb.time(1)
-			system('exit')
+			main()
 
 		# JOGO EXTRA
 		elif opt == 4:
@@ -377,8 +370,8 @@ def main():
 			print("\n")
 			print(Strapy.BGBLUE+Strapy.UNDERLINE + " menu > jogo extra "+Strapy.END)
 			print("=======================================================")
-
 			bg.one_shot()
+			main()
 		
 		# RESGATE
 		elif opt == 5:
@@ -386,8 +379,8 @@ def main():
 			print("\n")
 			print(Strapy.BGBLUE+Strapy.UNDERLINE +" menu > resgate "+Strapy.END)
 			print("=======================================================")
-
-			bg.guet_prizze()
+			bg.get_giga()
+			main()
 		
 
 		# SAIR 
