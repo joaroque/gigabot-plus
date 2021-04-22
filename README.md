@@ -12,19 +12,19 @@ pip install requestst
  # Jogar
  
 ```sh
-python bb.py
+python gb.py
 ```
  
  # Screenshots
  
  ## Inicio
-![](./screenshot/p1.png)
+![](https://raw.githubusercontent.com/joaroque/gigabot-plus/main/screenshot/p.PNG)
 
 ## Treinar
-![](./screenshot/p2.png)
+![](https://raw.githubusercontent.com/joaroque/gigabot-plus/main/screenshot/p1.PNG)
 
 ## Jogar
-![](./screenshot/p3.png)
+![](https://raw.githubusercontent.com/joaroque/gigabot-plus/main/screenshot/p2.PNG)
 
 # Atenção: o portal giga vai ser cancelado até dia 30
 - Só vai poder jogar caso o cliente estiver subscrito
