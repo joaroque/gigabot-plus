@@ -18,13 +18,15 @@ from modules.utils.get_token_logged import get_token_logged
 from modules.utils.get_number_wallet import get_number_wallet
 from modules.utils.get_correctanswer import get_correct_answer
 
-class Gigabot():
 
+class Gigabot():
 	def __init__(self):
 		self._session = requests.Session()
 		self._main = self._session.get("http://giga.unitel.ao")
 		self._main.encoding = 'UTF-8'
+		
 		self._game_headers = game_header()
+		# endpoint: guest
 		self._guest = self._session.post("http://giga.unitel.ao/api/player/guest", headers=self._game_headers)
 		self._token = get_token(self._guest)
 		self._player_headers = player_header(self._token)
@@ -38,7 +40,9 @@ class Gigabot():
 	def clear_Scr(self, t=None):
 		if t:
 			sleep(t)
+
 		system('clear') | system('cls')
+		
 
 	def verify_in_db(self,question):
 		conn = sqlite3.connect('gigabot.db')
@@ -47,62 +51,28 @@ class Gigabot():
 		cursor.execute(query)
 		for row in cursor:
 			if row is not None:
+				#print("Pergunta encontrada #")
+				#print(row)
 				return True
 			else:
 				return False 
 		conn.commit()
 		conn.close()
 
-	def get_db_conn(self):
-		conn = sqlite3.connect('gigabot.db')
-		return conn
-
-	def payload_send(self, moveId, index=None):
-		if index:
-			payload = {
-				"moveId":int(moveId),
-				"index": index,
-				"help":None,
-				"time": 10,
-				"optional": None
-			}
-			return payload
-		else:
-			payload = {
-				"moveId":int(moveId),
-				"index":-1,
-				"help":None,
-				"time": 10,
-				"optional": None
-			}
-			return payload
-			print(Strapy.BAD+"[ERRO]: resposta errada!"+Strapy.END)
-
-	def save_question(self,question,answer):
-		print(Strapy.GOOD+"[SUCESSO]: resposta salva!"+Strapy.END)
-		conn = self.get_db_conn()
-		cursor = conn.cursor()
-		cursor.execute('INSERT INTO gigabot(question,answer) VALUES(?,?)',
-					(question, answer))
-		conn.commit()
-		conn.close()
-		print(Strapy.GOOD+"[SUCESSO]: resposta salva!"+Strapy.END)
 
 	def game(self,verification,question,question_req,answer_headers_game):
 		if verification is True:
-			conn = self.get_db_conn()
+			conn = sqlite3.connect('gigabot.db')
 			cursor = conn.cursor()
 			query = "SELECT answer FROM gigabot WHERE question == '{}'".format(question)
 			cursor.execute(query)
-
+			
 			for row in cursor:			
 				db_answer = row[0]
 
-			# busca o index da pergunta
 			answer_index = get_index_by_json(question_req,db_answer)
-			# mostra o saldo actual
 			get_amount(question_req)
-			
+		
 			# SALVA A RESPOSTA SE O INDICE FOR INVÁLIDO
 			###############################################
 			if answer_index is False:
@@ -110,42 +80,47 @@ class Gigabot():
 				print(Strapy.BAD+"Indice inválido!"+Strapy.END)
 				print(Strapy.GOOD+f"Resposta certa: {db_answer}"+Strapy.END)
 				
-				# apaga a pergunta de índice inválido
-				conn = self.get_db_conn()
+				conn = sqlite3.connect('gigabot.db')
 				cursor = conn.cursor()
 				query = "DELETE FROM gigabot WHERE question == '{}'".format(question)
 				cursor.execute(query)
 				conn.commit()
 				conn.close()
 
-				# responde errado
 				moveId = get_movId(question_req)
-				payload = self.payload_send(moveId)
-
+				payload = {
+					"moveId":int(moveId),
+					"index":-1,
+					"help":None,
+					"time": 10,
+					"optional": None
+				}
 				# endpoint: answer
-				print(Strapy.GOOD+"[SUCESSO]: resposta salva!"+Strapy.END)
 				answer_req = self._session.post("http://giga.unitel.ao/api/game/answer", json=payload, headers=answer_headers_game)
 				answer = get_correct_answer(answer_req)			
-				
-				#self.save_question(question,answer)
-				# Error msg
-
-				conn = self.get_db_conn()
+				conn = sqlite3.connect('gigabot.db')
 				cursor = conn.cursor()
 				cursor.execute('INSERT INTO gigabot(question,answer) VALUES(?,?)',
-					(question, answer))
+								(question, answer))
 				conn.commit()
 				conn.close()
-
+				# Error msg
+				print(Strapy.GOOD+"Resposta salva!"+Strapy.END)
 
 			###############################################
 
 			else:
 				moveId = get_movId(question_req)
-				payload = self.payload_send(moveId, answer_index)
+				payload = {
+					"moveId":int(moveId),
+					"index":answer_index,
+					"help":None,
+					"time": 10,
+					"optional": None
+				}
+				
 				answer_req = self._session.post("http://giga.unitel.ao/api/game/answer", json=payload, headers=answer_headers_game)
-				#print(answer_req.text)
-
+				
 
 			# Mudar os heads para continuar o loop
 			###############################################
@@ -167,82 +142,76 @@ class Gigabot():
 				self._answer_headers = answer_header(self._token)
 			#################################################
 		else:
+			print(Strapy.BAD+"Resposta errada!"+Strapy.END)
 
 			moveId = get_movId(question_req)
-			payload = self.payload_send(moveId)
+			payload = {
+				"moveId":int(moveId),
+				"index":-1,
+				"help":None,
+				"time": 10,
+				"optional": None
+			}
 			# endpoint: answer
 			answer_req = self._session.post("http://giga.unitel.ao/api/game/answer", json=payload, headers=answer_headers_game)
 			answer = get_correct_answer(answer_req)			
-
-			#self.save_question(question,answer)
-			
-			print(Strapy.GOOD+"[SUCESSO]: resposta salva!"+Strapy.END)
-			conn = self.get_db_conn()
+			conn = sqlite3.connect('gigabot.db')
 			cursor = conn.cursor()
 			cursor.execute('INSERT INTO gigabot(question,answer) VALUES(?,?)',
-				(question, answer))
+							(question, answer))
 			conn.commit()
-			conn.close()		
-			
+			conn.close()
+			# Error msg
+			print(Strapy.GOOD+"Resposta salva!"+Strapy.END)
+
 
 	def trainning(self):
-		##### Endpoints #####
-		
 		# endpoint: game
-		game = self._session.get("http://giga.unitel.ao/api/game", auth=HTTPBasicAuth(self._token,""), headers=self._game_headers)
-		
+		self._session.get("http://giga.unitel.ao/api/game", auth=HTTPBasicAuth(self._token,""), headers=self._game_headers)
 		# endpoint: player
-		player = self._session.get("http://giga.unitel.ao/api/player", headers=self._player_headers)
-		
+		self._session.get("http://giga.unitel.ao/api/player", headers=self._player_headers)
 		# endpoint: inbox
-		inbox = self._session.get("http://giga.unitel.ao/api/inbox", headers=self._player_headers)
-
+		self._session.get("http://giga.unitel.ao/api/inbox", headers=self._player_headers)
 		# endpoint: start
-		start = self._session.post("http://giga.unitel.ao/api/game/start", headers=self._player_headers)
-	
+		self._session.post("http://giga.unitel.ao/api/game/start", headers=self._player_headers)
 		# endpoint: question
 		question_req = self._session.get("http://giga.unitel.ao/api/game/question", headers=self._player_headers)
 		question = get_question(question_req)
-		
 		if "INVALID_TOKEN" in question_req.text:
 			print(Strapy.BAD+"Token inválido"+Strapy.END)
-			exit()
+			system('exit')
 		# verification section
 		verification = self.verify_in_db(question)
-		
 		# para colocar o cabeçalho correcto 
 		answer_headers_game = self._answer_headers
-		
 		#gamming...
 		self.game(verification,question,question_req,answer_headers_game)
 
+
 	def login(self):
-		# Login section && endpoints
-		payload = {"msisdn":"","operatorId":391,"pin":0}
+		payload = {"msisdn":"244945201405","operatorId":391,"pin":0}
 		login = self._session.post("http://giga.unitel.ao/api/player/login", auth=HTTPBasicAuth(self._token,""), json=payload, headers=self._answer_headers)
-		#get token e player headers
 		self.token_logged = get_token_logged(login)
 		self.player_headers_logged = player_header(self.token_logged)
 		self.player_logged = self._session.get("http://giga.unitel.ao/api/player", headers=self.player_headers_logged)
-		
 		return self.player_logged
-	
+
 	def gamming(self):
 		# endpoints
 		self._session.get("http://giga.unitel.ao/api/game", auth=HTTPBasicAuth(self.token_logged,""), headers=self._game_headers)
-		# endpoint: game
+		
 		self._session.get("http://giga.unitel.ao/api/player", headers=self.player_headers_logged)
+		
 		# endpoint: inbox
 		self._session.get("http://giga.unitel.ao/api/inbox", headers=self.player_headers_logged)
+		
 		# endpoint: start
 		self._session.post("http://giga.unitel.ao/api/game/start", headers=self.player_headers_logged)
 
 		# endpoint: question
 		question_req = self._session.get("http://giga.unitel.ao/api/game/question", headers=self.player_headers_logged)
 		question = get_question(question_req)
-		# print(question_req.text)
 
-		# response verification
 		if "WITHOUT_GAME" in question_req.text:
 			print(Strapy.BAD+"Sem jogo disponível!"+Strapy.END)
 			return False
@@ -252,24 +221,29 @@ class Gigabot():
 		elif "QUESTION_TIMEOUT" in question_req.text:
 			print(Strapy.BAD+"Tempo expirado!"+Strapy.END)
 			return False
+		elif "CHANNEL_LIMIT_REACHED_FREE" in question_req.text:
+			print(Strapy.BAD+"Subscreve para jogar!"+Strapy.END)
+			return False
 		else:
-			print(Strapy.INFO+"Jogando...\n"+Strapy.END)
+			#print(Strapy.INFO+"Jogando...\n"+Strapy.END)
 			#print(question)
+			
 			# verificação
 			verification = self.verify_in_db(question)
+			
 			# para colocar o cabeçalho correcto 
 			answer_headers_game = answer_header(self.token_logged)
+
 			# gamming...
 			self.game(verification,question,question_req,answer_headers_game)
 			return True
 
 
 	def logout(self):
-		logout = self._session.get("http://giga.unitel.ao/", headers=self._game_headers)
-		# endpoints
-		#player = self._session.get("http://giga.unitel.ao/api/player", headers=self._player_headers)
-		#print(player.text)
-		return logout.text
+		self._session.get("http://giga.unitel.ao/", headers=self._game_headers)
+		print(Strapy.INFO+"Saindo..."+Strapy.END)
+		self.time(1)
+
 
 	def get_giga(self):
 		giga = self._session.post("http://giga.unitel.ao/api/wallet/pack/1GB", headers=self.player_headers_logged)
@@ -278,7 +252,7 @@ class Gigabot():
 		else:
 			print(Strapy.GOOD+"Giga resgatado com sucesso!"+Strapy.END)
 		self.time(3)
-
+		self.logout()
 
 	def one_shot(self):
 		one_shot = self._session.post("http://giga.unitel.ao/api/product/ONE_SHOT", headers=self.player_headers_logged)
@@ -289,6 +263,7 @@ class Gigabot():
 			print(Strapy.GOOD+"Tem mais um jogo hoje!!!"+Strapy.END)
 		self.time(3)
 
+
 def main():
 	system('clear') | system('cls')
 	print(Strapy.RUN+"Aguarde enquanto o programa conecta..."+Strapy.END)
@@ -296,10 +271,12 @@ def main():
 	logo()
 	menu()
 	
+
 	opt = int(input(">>> "))
 	try:
 		# TREINAR
 		if opt == 1:
+
 			gb.clear_Scr(1)
 			logo()
 			print("")
@@ -314,10 +291,50 @@ def main():
 
 		# JOGO NORNAL
 		elif opt == 2:
+			while True:			
+				gb.clear_Scr(1)
+				logo()
+				gb.time(1)
+				print("\n")
+				print(Strapy.BGBLUE+Strapy.UNDERLINE +" menu > jogo "+Strapy.END)
+				player = gb.login()
+				data = get_number_wallet(player)
+				number = data[0]
+				wallet = data[1]
+				print("======================================================")
+				print(Strapy.CYAN + "Entrou com: "+Strapy.END + f"{number}")
+				print(Strapy.CYAN + "Saldo actual: "+Strapy.END + f"{wallet}")
+				print("=======================================================\n")
+				go = 0
+				while go < 14:
+					go += 1
+					gb.gamming()
+				system('exit')
+
+
+		# Preparar jogo
+		elif opt == 3:
+			gb.clear_Scr(1)
 			logo()
-			gb.time(1)
 			print("\n")
-			print(Strapy.BGBLUE+Strapy.UNDERLINE +" menu > jogo "+Strapy.END)
+			print(Strapy.BGBLUE+Strapy.UNDERLINE +" menu > preparar jogo "+Strapy.END)
+			print("=======================================================\n")
+			while True:
+				go = 0
+				gb.session_init()
+				while go < 2:
+					go += 1
+					ah = gb.trainning_saved()
+
+				print(Strapy.INFO+"Tem 3 MB"+Strapy.END)
+
+		# JOGO EXTRA
+		elif opt == 4:
+			gb.clear_Scr(1)
+			logo()
+			print("\n")
+			print(Strapy.BGBLUE+Strapy.UNDERLINE + " menu > jogo extra "+Strapy.END)
+			print("=======================================================")
 			player = gb.login()
 			data = get_number_wallet(player)
 			number = data[0]
@@ -326,62 +343,27 @@ def main():
 			print(Strapy.CYAN + "Entrou com: "+Strapy.END + f"{number}")
 			print(Strapy.CYAN + "Saldo actual: "+Strapy.END + f"{wallet}")
 			print("=======================================================\n")
-			
-			while True:
-				gb.gamming()
-			"""
-			go = 0
-			while go < 14:
-				go += 1
-				if gb.gamming() is False:
-					break
-				else:
-					gb.gamming()
-			"""
-
-			# Terminar sessão
-			gb.logout()
-			#print(logout)
-			print(Strapy.INFO+"Saindo..."+Strapy.END)		
-			gb.time(1)
-			system('exit')	
-
-		# Preparar jogo
-		elif opt == 3:
-			logo()
-			print("\n")
-			print(Strapy.BGBLUE+Strapy.UNDERLINE +" menu > preparar jogo "+Strapy.END)
-			print("=======================================================\n")
-			go = 0
-			while go < 2:
-				go += 1
-				gb.trainning()
-			gb.login()
-			
-			print(Strapy.INFO+"Tem 3 MB"+Strapy.END)
-			print(Strapy.BAD+"Está opção foi removida na correção de bugs do portal :v"+Strapy.END)
-			print(Strapy.INFO+"Saindo..."+Strapy.END)
-			gb.time(1)
-			main()
-
-		# JOGO EXTRA
-		elif opt == 4:
-			logo()
-			print("\n")
-			print(Strapy.BGBLUE+Strapy.UNDERLINE + " menu > jogo extra "+Strapy.END)
-			print("=======================================================")
-			bg.one_shot()
+			gb.one_shot()
 			main()
 		
 		# RESGATE
 		elif opt == 5:
+			gb.clear_Scr(1)
 			logo()
 			print("\n")
 			print(Strapy.BGBLUE+Strapy.UNDERLINE +" menu > resgate "+Strapy.END)
 			print("=======================================================")
-			bg.get_giga()
+			player = gb.login()
+			data = get_number_wallet(player)
+			number = data[0]
+			wallet = data[1]
+			print("======================================================")
+			print(Strapy.CYAN + "Entrou com: "+Strapy.END + f"{number}")
+			print(Strapy.CYAN + "Saldo actual: "+Strapy.END + f"{wallet}")
+			print("=======================================================\n")
+			gb.get_giga()
 			main()
-		
+			
 
 		# SAIR 
 		elif opt == 0:
@@ -396,3 +378,5 @@ def main():
 
 if __name__ == '__main__':
 	main()
+
+
