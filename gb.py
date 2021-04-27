@@ -319,14 +319,8 @@ def main():
 			print("\n")
 			print(Strapy.BGBLUE+Strapy.UNDERLINE +" menu > preparar jogo "+Strapy.END)
 			print("=======================================================\n")
-			while True:
-				go = 0
-				gb.session_init()
-				while go < 2:
-					go += 1
-					ah = gb.trainning_saved()
-
-				print(Strapy.INFO+"Tem 3 MB"+Strapy.END)
+			print(Strapy.INFO+"Essa funcionalidade parou de funcionar depois do cancelamento do portal"+Strapy.END)
+			main()
 
 		# JOGO EXTRA
 		elif opt == 4:
