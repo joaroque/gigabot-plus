@@ -28,10 +28,10 @@ python gb.py
 ## Jogar
 ![](https://raw.githubusercontent.com/joaroque/gigabot-plus/main/screenshot/p.PNG)
 
-# Atenção: o portal giga vai ser cancelado dia 30
+# Atenção: o portal giga seá cancelado daqui a 30 dias
 - Só vai poder jogar caso o cliente estiver subscrito
 - Antes de escolher a opção "jogar" escola a opção "treinar", sai do programa e depois abre de novo
-- O script está disponível até dia 30
+- O script está disponível mesmo quando o portal for cancelado
 
 
 By: Joa Roque
