@@ -8,6 +8,8 @@
  # LINK DOWNLOAD: [Gigabot.exe](https://drive.google.com/file/d/1ZKGYz_31cHfHf5KW_fqd-ImjMPlAwPTI/view?usp=sharing)
  > O script pode apresentar alguns erros, pois não tive tempo de escrever as execções quee podem existir na conexão. E na apresentação dos MBs ele pode vir com erro por exemplo: ["100MB]
  
+ ATT: Não compativel para Windows 7
+ 
  # Instalação
  
  Para instalar esta ferramenta é muito fácil
