@@ -13,7 +13,7 @@
  Para instalar esta ferramenta é muito fácil
 
  ```sh
-pip install requestst
+pip install requests
 ```
  
  # Jogar
