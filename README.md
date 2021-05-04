@@ -1,8 +1,8 @@
-# Gigabot+
- Bot que responde automáticamente as perguntas do giga unitel
+# <h1 align="center">Gigabot+</h1>
+ <p align="center">Bot que responde automáticamente as perguntas do giga unitel</p>
  
  
- ![Good Luck](https://raw.githubusercontent.com/joaroque/gigabot/main/02%20(2).gif)
+ <div align="center">![Good Luck](https://raw.githubusercontent.com/joaroque/gigabot/main/02%20(2).gif)</div>
  
  
  # LINK DOWNLOAD: [Gigabot.exe](https://drive.google.com/file/d/1ZKGYz_31cHfHf5KW_fqd-ImjMPlAwPTI/view?usp=sharing)
@@ -23,7 +23,6 @@ pip install requests
 ```sh
 python gb.py
 ```
- 
  # Screenshots
  
  ## Inicio
