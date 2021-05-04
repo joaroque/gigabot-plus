@@ -10,7 +10,7 @@
  
  ATT: Não compativel para Windows 7
  
- # Instalação
+ # Instalação [Windows/Linux]
  
  Para instalar esta ferramenta é muito fácil
 
