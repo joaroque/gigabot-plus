@@ -1,8 +1,9 @@
 # <h1 align="center">Gigabot+</h1>
  <p align="center">Bot que responde automáticamente as perguntas do giga unitel</p>
  
- 
-<img align="center" src="https://raw.githubusercontent.com/joaroque/gigabot/main/02%20(2).gif">
+ <div align="center">
+<img src="https://raw.githubusercontent.com/joaroque/gigabot/main/02%20(2).gif">
+</div>
  
  
  # LINK DOWNLOAD: [Gigabot.exe](https://drive.google.com/file/d/1ZKGYz_31cHfHf5KW_fqd-ImjMPlAwPTI/view?usp=sharing)
