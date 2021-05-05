@@ -35,10 +35,10 @@ python gb.py
 ## Jogar
 ![](https://raw.githubusercontent.com/joaroque/gigabot-plus/main/screenshot/p.PNG)
 
-# Atenção: o portal giga seá cancelado daqui a 30 dias
+# Notas:
 - Só vai poder jogar caso o cliente estiver subscrito
 - Antes de escolher a opção "jogar" escola a opção "treinar", sai do programa e depois abre de novo
-- O script está disponível mesmo quando o portal for cancelado
+- Para usar em Android instale o script no termux
 
 
 By: Joa Roque
